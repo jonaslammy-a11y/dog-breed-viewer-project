@@ -4,14 +4,19 @@ import { Skeleton, TextField, Typography, Button, ListItem, ListItemText } from 
 import { useDogBreeds } from '../../../hooks/useDogBreeds';
 import { useDogStore } from '../../../store/dogStore';
 import { useDebounce } from '../../../hooks/useDebounce';
+import { useDogImages } from '../../../hooks/useDogImages'; // Import the hook for fetching dog images
+import ImageDisplay from './ImageDisplay'; // Import the ImageDisplay component
 
 const ITEM_HEIGHT = 48; // For virtualization
 
 const BreedViewer = () => {
   const { data: breeds, isLoading, error, refetch } = useDogBreeds();
-  const { setSelectedBreed } = useDogStore();
+  const { selectedBreed, setSelectedBreed } = useDogStore(); // Destructure selectedBreed
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm.toLowerCase());
+
+  // Fetch images for the selected breed
+  const { data: images = [], isLoading: loadingImages, error: imageError } = useDogImages(selectedBreed);
 
   const filteredBreeds = breeds?.filter((breed) =>
     breed.toLowerCase().includes(debouncedSearch)
@@ -65,6 +70,14 @@ const BreedViewer = () => {
       >
         {Row}
       </FixedSizeList>
+
+      {/* Display images for the selected breed */}
+      {selectedBreed && (
+        <div className="mt-8">
+          <Typography variant="h6">Images for {selectedBreed}</Typography>
+          <ImageDisplay images={images} isLoading={loadingImages} error={imageError} />
+        </div>
+      )}
     </div>
   );
 };
