@@ -1,6 +1,6 @@
 # Dog Breed Viewer
 
-A single-page application built with React, TypeScript, Nest.js, and more.
+A single-page application built with React, TypeScript, Nest.js + SQLite, Jest/Cypress and more.
 
 ## Overview
 - Browse dog breeds with search and virtualization.
@@ -29,6 +29,7 @@ A single-page application built with React, TypeScript, Nest.js, and more.
 
 ### Backend
 - `cd backend`
+- Copy `.env.example` to `.env` and set `JWT_SECRET` and `DATABASE_PATH`.
 - `npm i`
 - `npm run start:dev`[](http://localhost:3001)
 
