@@ -10,4 +10,4 @@ describe('flattenBreeds', () => {
     const input = { message: { bulldog: ['boston', 'french'] } };
     expect(flattenBreeds(input.message)).toEqual(['bulldog - boston', 'bulldog - french']);
   });
-});
+}); 

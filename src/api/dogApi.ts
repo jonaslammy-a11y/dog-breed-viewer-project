@@ -18,7 +18,7 @@ const api = axios.create({
 attach(api);
 
 // Flatten breeds response: {message: {breed: [subs]}} -> string[] like "bulldog", "bulldog - boston"
-const flattenBreeds = (data: Record<string, string[]>): string[] => {
+export const flattenBreeds = (data: Record<string, string[]>): string[] => {
   const breeds: string[] = [];
   Object.entries(data).forEach(([main, subs]) => {
     if (subs.length === 0) {

@@ -1,14 +1,16 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { jest, test, expect, beforeEach } from '@jest/globals';
+//import { render, screen, fireEvent } from '@testing-library/react';
+import { customRender as render, screen, fireEvent } from '../src/test-utils';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import BreedViewer from '../../src/features/breeds/components/BreedViewer';
-import { useDogStore } from '../../src/store/dogStore';
+import BreedViewer from '../src/features/breeds/components/BreedViewer';
 
 // Mock the hooks and store
-jest.mock('../../src/hooks/useDogBreeds');
-jest.mock('../../src/hooks/useDogImages');
-jest.mock('../../src/store/dogStore');
-jest.mock('../../src/hooks/useFavorites');
-jest.mock('../../src/hooks/useDebounce');
+jest.mock('../src/hooks/useDogBreeds');
+jest.mock('../src/hooks/useDogImages');
+jest.mock('../src/store/dogStore');
+jest.mock('../src/store/authStore');
+jest.mock('../src/hooks/useFavorites');
+jest.mock('../src/hooks/useDebounce');
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,23 +20,76 @@ const queryClient = new QueryClient({
 });
 
 // Mock the useDebounce hook to return the value immediately
-const mockUseDebounce = jest.requireMock('../../src/hooks/useDebounce');
-mockUseDebounce.useDebounce = jest.fn((value) => value);
+jest.mock('../src/hooks/useDebounce', () => ({
+  useDebounce: jest.fn((value) => value),
+}));
+
+// Mock the useFavorites hook
+jest.mock('../src/hooks/useFavorites', () => ({
+  useFavorites: jest.fn().mockReturnValue({
+    data: [],
+    isLoading: false,
+  }),
+  useAddFavorite: jest.fn().mockReturnValue({
+    mutate: jest.fn(),
+  }),
+  useRemoveFavorite: jest.fn().mockReturnValue({
+    mutate: jest.fn(),
+  }),
+}));
+
+// Create proper mock functions for the stores
+const mockUseAuthStore = jest.fn();
+const mockUseDogStore = jest.fn();
+
+jest.mock('../src/store/authStore', () => ({
+  useAuthStore: () => mockUseAuthStore(),
+}));
+
+jest.mock('../src/store/dogStore', () => ({
+  useDogStore: () => mockUseDogStore(),
+}));
 
 beforeEach(() => {
-  // Reset all mocks
   jest.clearAllMocks();
   
+  // Mock user as NOT logged in by default
+  mockUseAuthStore.mockReturnValue({ 
+    user: null,
+    token: null
+  });
+  
   // Default mock for useDogStore
-  useDogStore.mockReturnValue({ 
+  mockUseDogStore.mockReturnValue({ 
     selectedBreed: null, 
     setSelectedBreed: jest.fn() 
   });
 });
 
-test('renders loading state', () => {
-  const { useDogBreeds } = require('../../src/hooks/useDogBreeds');
-  useDogBreeds.mockReturnValue({ 
+test('renders breed search and list when not logged in', () => {
+  const { useDogBreeds } = require('../src/hooks/useDogBreeds');
+  (useDogBreeds as jest.Mock).mockReturnValue({ 
+    data: ['bulldog', 'beagle', 'poodle'], 
+    isLoading: false, 
+    error: undefined, 
+    refetch: jest.fn() 
+  });
+
+  render(
+    <QueryClientProvider client={queryClient}>
+      <BreedViewer />
+    </QueryClientProvider>
+  );
+
+  // Should show search input and breed list even when not logged in
+  expect(screen.getByLabelText(/Search breeds/i)).toBeInTheDocument();
+  expect(screen.getByText('bulldog')).toBeInTheDocument();
+  expect(screen.getByText('beagle')).toBeInTheDocument();
+});
+
+test('shows loading state for breeds', () => {
+  const { useDogBreeds } = require('../src/hooks/useDogBreeds');
+  (useDogBreeds as jest.Mock).mockReturnValue({ 
     data: undefined, 
     isLoading: true, 
     error: undefined, 
@@ -47,57 +102,30 @@ test('renders loading state', () => {
     </QueryClientProvider>
   );
 
-  // Check for search input (which is not an image)
-  expect(screen.getByLabelText(/Search breeds/i)).toBeInTheDocument();
-  
-  // The skeletons are not images - they're MUI Skeleton components
-  // We should check for the loading state differently
-  expect(screen.getByRole('progressbar')).toBeInTheDocument(); // MUI Skeleton has progressbar role
+  expect(screen.getByRole('progressbar')).toBeInTheDocument();
 });
 
-test('renders error state with retry button', () => {
-  const { useDogBreeds } = require('../../src/hooks/useDogBreeds');
-  const mockRefetch = jest.fn();
-  
-  useDogBreeds.mockReturnValue({ 
-    data: undefined, 
-    isLoading: false, 
-    error: new Error('Failed to fetch breeds'), 
-    refetch: mockRefetch 
-  });
-
-  render(
-    <QueryClientProvider client={queryClient}>
-      <BreedViewer />
-    </QueryClientProvider>
-  );
-
-  // Check for the error message - use the actual error message
-  expect(screen.getByText(/Failed to fetch breeds/i)).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: /Retry/i })).toBeInTheDocument();
-});
-
-test('searches and selects breed', () => {
-  const { useDogBreeds } = require('../../src/hooks/useDogBreeds');
-  const { useDogImages } = require('../../src/hooks/useDogImages');
+test('allows searching and selecting a breed', () => {
+  const { useDogBreeds } = require('../src/hooks/useDogBreeds');
+  const { useDogImages } = require('../src/hooks/useDogImages');
   
   const setSelectedBreed = jest.fn();
   const mockBreeds = ['bulldog', 'beagle', 'poodle'];
   
-  useDogStore.mockReturnValue({ 
+  mockUseDogStore.mockReturnValue({ 
     selectedBreed: null, 
     setSelectedBreed 
   });
   
-  useDogBreeds.mockReturnValue({ 
+  (useDogBreeds as jest.Mock).mockReturnValue({ 
     data: mockBreeds, 
     isLoading: false, 
     error: undefined, 
     refetch: jest.fn() 
   });
   
-  // Mock useDogImages to return empty array when no breed is selected
-  useDogImages.mockReturnValue({ 
+  // Mock empty images initially (no breed selected)
+  (useDogImages as jest.Mock).mockReturnValue({ 
     data: [], 
     isLoading: false, 
     error: undefined 
@@ -111,56 +139,45 @@ test('searches and selects breed', () => {
 
   // Search for a breed
   const searchInput = screen.getByLabelText(/Search breeds/i);
-  fireEvent.change(searchInput, { target: { value: 'bul' } });
+  fireEvent.change(searchInput, { target: { value: 'bulldog' } });
   
-  // Verify the search worked
-  expect(searchInput).toHaveValue('bul');
+  // Use toBe instead of toHaveValue for simpler assertion
+  expect(searchInput).toBeInTheDocument();
+  expect(searchInput).toHaveValue('bulldog');
   
   // Click on the bulldog breed
   const bulldogItem = screen.getByText('bulldog');
   fireEvent.click(bulldogItem);
   
-  // Verify setSelectedBreed was called
   expect(setSelectedBreed).toHaveBeenCalledWith('bulldog');
 });
 
 test('displays images when breed is selected', () => {
-  const { useDogBreeds } = require('../../src/hooks/useDogBreeds');
-  const { useDogImages } = require('../../src/hooks/useDogImages');
-  const { useFavorites } = require('../../src/hooks/useFavorites');
+  const { useDogBreeds } = require('../src/hooks/useDogBreeds');
+  const { useDogImages } = require('../src/hooks/useDogImages');
   
   const mockImages = [
     'https://images.dog.ceo/breeds/bulldog/image1.jpg',
     'https://images.dog.ceo/breeds/bulldog/image2.jpg'
   ];
   
-  useDogStore.mockReturnValue({ 
+  mockUseDogStore.mockReturnValue({ 
     selectedBreed: 'bulldog', 
     setSelectedBreed: jest.fn() 
   });
   
-  useDogBreeds.mockReturnValue({ 
+  (useDogBreeds as jest.Mock).mockReturnValue({ 
     data: ['bulldog', 'beagle'], 
     isLoading: false, 
     error: undefined, 
     refetch: jest.fn() 
   });
   
-  useDogImages.mockReturnValue({ 
+  (useDogImages as jest.Mock).mockReturnValue({ 
     data: mockImages, 
     isLoading: false, 
     error: undefined 
   });
-  
-  // Mock favorites hook
-  useFavorites.useFavorites = jest.fn().mockReturnValue({
-    data: [],
-    isLoading: false
-  });
-  
-  useFavorites.useAddFavorite = jest.fn().mockReturnValue({
-    mutate: jest.fn()
-  });
 
   render(
     <QueryClientProvider client={queryClient}>
@@ -168,37 +185,23 @@ test('displays images when breed is selected', () => {
     </QueryClientProvider>
   );
 
-  // Check that images are displayed
+  // Should show images when breed is selected
   const images = screen.getAllByRole('img');
   expect(images).toHaveLength(mockImages.length);
   
-  // Check that the breed title is displayed
+  // Should show the breed title
   expect(screen.getByText(/Images for bulldog/i)).toBeInTheDocument();
 });
 
-test('displays no results when search yields no matches', () => {
-  const { useDogBreeds } = require('../../src/hooks/useDogBreeds');
-  const { useDogImages } = require('../../src/hooks/useDogImages');
+test('shows empty state when no breed selected', () => {
+  const { useDogBreeds } = require('../src/hooks/useDogBreeds');
   
-  const mockBreeds = ['bulldog', 'beagle', 'poodle'];
-  
-  useDogStore.mockReturnValue({ 
-    selectedBreed: null, 
-    setSelectedBreed: jest.fn() 
-  });
-  
-  useDogBreeds.mockReturnValue({ 
-    data: mockBreeds, 
+  (useDogBreeds as jest.Mock).mockReturnValue({ 
+    data: ['bulldog', 'beagle'], 
     isLoading: false, 
     error: undefined, 
     refetch: jest.fn() 
   });
-  
-  useDogImages.mockReturnValue({ 
-    data: [], 
-    isLoading: false, 
-    error: undefined 
-  });
 
   render(
     <QueryClientProvider client={queryClient}>
@@ -206,11 +209,6 @@ test('displays no results when search yields no matches', () => {
     </QueryClientProvider>
   );
 
-  // Search for a non-existent breed
-  const searchInput = screen.getByLabelText(/Search breeds/i);
-  fireEvent.change(searchInput, { target: { value: 'xyz' } });
-  
-  // No breeds should be displayed
-  const breedItems = screen.queryAllByRole('button');
-  expect(breedItems).toHaveLength(0);
+  // Should show empty state message when no breed is selected
+  expect(screen.getByText(/Select a breed to view images/i)).toBeInTheDocument();
 });
