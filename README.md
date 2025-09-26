@@ -23,13 +23,12 @@ A single-page application built with React, TypeScript, Nest.js + SQLite, Jest/C
 
 ## Setup
 ### Frontend
-- `cd <Project Root folder>'
+- Ensure you are on <Project Root folder>
 - `npm i`
 - `npm run dev`[](http://localhost:5173)
 
 ### Backend
 - `cd backend`
-- Copy `.env.example` to `.env` and set `JWT_SECRET` and `DATABASE_PATH`.
 - `npm i`
 - `npm run start:dev`[](http://localhost:3001)
 
