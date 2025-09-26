@@ -23,7 +23,7 @@ A single-page application built with React, TypeScript, Nest.js + SQLite, Jest/C
 
 ## Setup
 ### Frontend
-- Ensure you are on <Project Root folder>
+- Ensure you are on root folder
 - `npm i`
 - `npm run dev`[](http://localhost:5173)
 
