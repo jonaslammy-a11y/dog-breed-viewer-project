@@ -1,0 +1,1 @@
+export const useDebounce = jest.fn((value) => value);

@@ -13,7 +13,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 2, // For rate limits
-      cacheTime: Infinity, // Offline support for breeds
+      gcTime: Infinity,
       staleTime: 1000 * 60 * 60 * 24, // 24 hours
     },
   },

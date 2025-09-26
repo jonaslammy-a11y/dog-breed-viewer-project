@@ -1,6 +1,6 @@
 import { Grid, Typography, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useFavorites, useRemoveFavorite } from '../hooks/useFavorites';
+import { useFavorites, useRemoveFavorite }  from "../../hooks/useFavorites";
 
 const FavoritesPage = () => {
   const { data: favorites = [], isLoading } = useFavorites();

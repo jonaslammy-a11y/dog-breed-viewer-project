@@ -1,14 +1,21 @@
 import axios from 'axios';
-import { attach } from 'retry-axios'; // Corrected import
+import { attach } from 'retry-axios';
 
 // Create Axios instance with base URL and retries for rate limits (exponential backoff on 429)
 const api = axios.create({
-  baseURL: 'https://dog.ceo/api', // Removed extra space in URL
+  baseURL: 'https://dog.ceo/api',
   timeout: 5000,
+  // Attach retry logic with the configuration inside the raxConfig property
+  // This is the correct way to configure retry-axios in newer versions
+  raxConfig: {
+    retry: 3,
+    retryDelay: 1000,
+    instance: axios
+  },
 });
 
-// Attach retry logic: 3 attempts, delay 1s * attempt#
-api.interceptors.request.use(attach({ instance: api, retry: 3, retryDelay: 1000 }));
+// Attach the retry interceptor to the instance
+attach(api);
 
 // Flatten breeds response: {message: {breed: [subs]}} -> string[] like "bulldog", "bulldog - boston"
 const flattenBreeds = (data: Record<string, string[]>): string[] => {

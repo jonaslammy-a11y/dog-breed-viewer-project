@@ -6,7 +6,7 @@ export const useDogBreeds = () => {
     queryKey: ['breeds'],
     queryFn: fetchAllBreeds,
     staleTime: 1000 * 60 * 60 * 24, // 24 hours cache
-    cacheTime: Infinity, // Keep for offline
+    gcTime: Infinity,
     retry: false, // Handled by retry-axios
   });
 };
