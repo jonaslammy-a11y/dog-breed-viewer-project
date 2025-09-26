@@ -23,7 +23,7 @@ A single-page application built with React, TypeScript, Nest.js + SQLite, Jest/C
 
 ## Setup
 ### Frontend
-- `cd dog-breed-viewer`
+- `cd <Project Root folder>'
 - `npm i`
 - `npm run dev`[](http://localhost:5173)
 
