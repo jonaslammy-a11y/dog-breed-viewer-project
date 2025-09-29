@@ -22,10 +22,6 @@ const Layout = () => {
     setLoginModalOpen(true);
   };
 
-  const handleLoginSuccess = () => {
-    setLoginModalOpen(false);
-  };
-
   const handleLogout = () => {
     logout();
     navigate('/');
