@@ -1,5 +1,5 @@
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import LoginModal from '../features/auth/LoginModal';
 import { useState } from 'react';
@@ -16,6 +16,7 @@ const Layout = () => {
   const { user, logout } = useAuthStore();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location
 
   const handleLoginClick = () => {
     setLoginModalOpen(true);
@@ -30,6 +31,11 @@ const Layout = () => {
     navigate('/');
   };
 
+  // Check if we're on the home page
+  const isHomePage = location.pathname === '/' || location.pathname === '';
+  // Check if we're on the favorites page
+  const isFavoritesPage = location.pathname === '/favorites';
+
   return (
     <div className="min-h-screen bg-gray-100">
       <AppBar position="static">
@@ -41,24 +47,31 @@ const Layout = () => {
           </Typography>
           
           {/* Navigation Links */}
-          <Button 
-            color="inherit" 
-            component={Link} 
-            to="/" 
-            sx={{ mx: 1 }}
-            data-testid="breed-viewer-link"
-          >
-            Breed Viewer
-          </Button>
-          <Button 
-            color="inherit" 
-            component={Link} 
-            to="/favorites" 
-            sx={{ mx: 1 }}
-            data-testid="favorites-link"
-          >
-            Favorites
-          </Button>
+          {/* Breed Viewer Link - Only show when NOT on home page */}
+          {!isHomePage && (
+            <Button 
+              color="inherit" 
+              component={Link} 
+              to="/" 
+              sx={{ mx: 1 }}
+              data-testid="breed-viewer-link"
+            >
+              Breed Viewer
+            </Button>
+          )}
+          
+          {/* Favorites Link - Only show when logged in AND NOT on favorites page */}
+          {user && !isFavoritesPage && (
+            <Button 
+              color="inherit" 
+              component={Link} 
+              to="/favorites" 
+              sx={{ mx: 1 }}
+              data-testid="favorites-link"
+            >
+              Favorites
+            </Button>
+          )}
           
           {/* Auth Section */}
           {user ? (

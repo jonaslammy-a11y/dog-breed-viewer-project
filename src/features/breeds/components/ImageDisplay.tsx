@@ -6,6 +6,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useState } from 'react';
 import { useAddFavorite, useRemoveFavorite, useFavorites, getIsFavorite } from "../../../hooks/useFavorites";
+import { useAuthStore } from '../../../store/authStore'; // Import the auth store
 
 type ImageDisplayProps = { images: string[]; isLoading: boolean; error?: Error };
 
@@ -15,6 +16,7 @@ const ImageDisplay = ({ images, isLoading, error }: ImageDisplayProps) => {
   const { data: favorites = [] } = useFavorites();
   const { mutate: addFavorite } = useAddFavorite();
   const { mutate: removeFavorite } = useRemoveFavorite();
+  const { user } = useAuthStore(); // Get user from auth store
 
   const handleOpen = (img: string) => {
     setSelectedImg(img);
@@ -53,6 +55,7 @@ const ImageDisplay = ({ images, isLoading, error }: ImageDisplayProps) => {
       <Grid container spacing={2}>
         {images.map((url, i) => {
           const isFavorited = getIsFavorite(favorites, url);
+          const isLoggedIn = !!user; // Check if user is logged in
           
           return (
             <Grid key={url} size={{ xs: 12, sm: 4 }} sx={{ position: 'relative' }}>
@@ -66,20 +69,22 @@ const ImageDisplay = ({ images, isLoading, error }: ImageDisplayProps) => {
                 transition={{ duration: 0.5 }}
                 onClick={() => handleOpen(url)}
               />
-              {/* Favorite Button with Toggle */}
-              <IconButton
-                onClick={(e) => handleFavoriteToggle(url, e)}
-                className="absolute bottom-2 right-2 bg-white rounded-full shadow-md"
-                aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
-                sx={{
-                  color: isFavorited ? 'red' : 'inherit',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  }
-                }}
-              >
-                {isFavorited ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-              </IconButton>
+              {/* Favorite Button with Toggle - Only show when logged in */}
+              {isLoggedIn && (
+                <IconButton
+                  onClick={(e) => handleFavoriteToggle(url, e)}
+                  className="absolute bottom-2 right-2 bg-white rounded-full shadow-md"
+                  aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+                  sx={{
+                    color: isFavorited ? 'red' : 'inherit',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    }
+                  }}
+                >
+                  {isFavorited ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                </IconButton>
+              )}
             </Grid>
           );
         })}

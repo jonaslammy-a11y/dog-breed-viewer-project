@@ -30,7 +30,7 @@ A single-page application built with React, TypeScript, Nest.js + SQLite, Jest/C
 ### Backend
 - `cd backend`
 - `npm i`
-- `npm run start`[](http://localhost:3001)
+- `npm run start:dev`[](http://localhost:3001)
 
 
 ## Running Tests
