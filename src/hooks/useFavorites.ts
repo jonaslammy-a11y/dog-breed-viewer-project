@@ -1,3 +1,4 @@
+// hooks/useFavorites.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { backendApi } from '../lib/axios';
 import toast from 'react-hot-toast';
@@ -7,6 +8,11 @@ export const useFavorites = () => {
     queryKey: ['favorites'],
     queryFn: async () => (await backendApi.get('/favorites')).data,
   });
+};
+
+// Remove the useIsFavorite hook and create a helper function instead
+export const getIsFavorite = (favorites: string[], imageUrl: string): boolean => {
+  return favorites.includes(imageUrl);
 };
 
 export const useAddFavorite = () => {
