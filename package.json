@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint src --ext .ts,.tsx",
     "preview": "vite preview",
-    "test": "vitest --coverage",
+    "test": "vitest",
     "cypress": "cypress open"
   },
   "dependencies": {

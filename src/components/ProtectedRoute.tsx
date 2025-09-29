@@ -13,21 +13,23 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
   const toastShownRef = useRef(false); // Track if toast has been shown
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      if (token) {
-        try {
-          const userData = await getMe(token);
-          login(token, userData);
-        } catch (error) {
-          logout();
-        }
+useEffect(() => {
+  const verifyToken = async () => {
+    if (token) {
+      try {
+        const userData = await getMe(token);
+        login(token, userData);
+      } catch (error) {
+        // Remove the unused error variable or use it
+        console.error('Token verification failed:', error);
+        logout();
       }
-      setLoading(false);
-    };
-    
-    verifyToken();
-  }, [token, login, logout]);
+    }
+    setLoading(false);
+  };
+  
+  verifyToken();
+}, [token, login, logout]);
 
   // Move toast to useEffect to control when it's shown
   useEffect(() => {

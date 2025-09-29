@@ -11,16 +11,18 @@ const LoginModal = ({ open, onClose }: LoginModalProps) => {
   const [password, setPassword] = useState('');
   const { login: setLogin } = useAuthStore();
 
-  const handleLogin = async () => {
-    try {
-      const data = await login({ username, password, expiresInMins: 30 });
-      setLogin(data.accessToken, data); // Store token and user
-      toast.success('Logged in successfully');
-      onClose();
-    } catch (error) {
-      toast.error('Login failed. Check credentials.');
-    }
-  };
+const handleLogin = async () => {
+  try {
+    const data = await login({ username, password, expiresInMins: 30 });
+    setLogin(data.accessToken, data); // Store token and user
+    toast.success('Logged in successfully');
+    onClose();
+  } catch (error) {
+    // Remove the unused error variable or use it
+    console.error('Login failed:', error);
+    toast.error('Login failed. Check credentials.');
+  }
+};
 
   return (
     <Dialog open={open} onClose={onClose}>
