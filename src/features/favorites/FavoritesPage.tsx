@@ -6,11 +6,11 @@ const FavoritesPage = () => {
   const { data: favorites = [], isLoading } = useFavorites();
   const { mutate: removeFavorite } = useRemoveFavorite();
 
-  if (isLoading) return <Typography>Loading favorites...</Typography>;
+  if (isLoading) return <Typography>Loading favourites...</Typography>;
 
   return (
     <div className="space-y-4">
-      <Typography variant="h5">My Favorites</Typography>
+      <Typography variant="h5">My Favourites</Typography>
       <Grid container spacing={2}>
         {favorites.map((url) => (
           <Grid

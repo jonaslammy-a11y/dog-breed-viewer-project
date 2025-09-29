@@ -69,7 +69,7 @@ const Layout = () => {
               sx={{ mx: 1 }}
               data-testid="favorites-link"
             >
-              Favorites
+              My Favourites
             </Button>
           )}
           
