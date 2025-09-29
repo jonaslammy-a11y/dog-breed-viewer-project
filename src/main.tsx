@@ -7,7 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Toaster } from 'react-hot-toast';
 import theme from './lib/muiTheme';
 import App from './App.tsx';
-import './index.css';
+import './app.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {

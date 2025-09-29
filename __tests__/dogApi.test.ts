@@ -1,3 +1,5 @@
+// dogApi.test.ts
+import { describe, it, expect } from 'vitest';
 import { flattenBreeds } from '../src/api/dogApi';
 
 describe('flattenBreeds', () => {
@@ -10,4 +12,4 @@ describe('flattenBreeds', () => {
     const input = { message: { bulldog: ['boston', 'french'] } };
     expect(flattenBreeds(input.message)).toEqual(['bulldog - boston', 'bulldog - french']);
   });
-}); 
+});

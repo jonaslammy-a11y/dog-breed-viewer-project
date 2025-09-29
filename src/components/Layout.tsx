@@ -4,6 +4,14 @@ import { useAuthStore } from '../store/authStore';
 import LoginModal from '../features/auth/LoginModal';
 import { useState } from 'react';
 
+// Add the toTitleCase function here
+function toTitleCase(str: string) {
+  return str.replace(
+    /\w\S*/g,
+    text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+  );
+}
+
 const Layout = () => {
   const { user, logout } = useAuthStore();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -56,7 +64,8 @@ const Layout = () => {
           {user ? (
             <>
               <Typography sx={{ mx: 2 }} data-testid="welcome-message">
-                Welcome, {user.username}
+                {/* Apply toTitleCase to the username here */}
+                Welcome, {toTitleCase(user.username)}
               </Typography>
               <Button color="inherit" onClick={handleLogout} data-testid="logout-button">
                 Logout

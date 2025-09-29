@@ -13,7 +13,7 @@ describe('Dog Breed Viewer', () => {
       cy.get('button').contains('Login').click();
       
       // Check login success
-      cy.get('[data-testid="welcome-message"]').should('contain', 'emilys');
+      cy.get('[data-testid="welcome-message"]').should('contain', 'Emilys');
 
       // Wait for breeds to load before searching
       cy.get('input[aria-label="Search breeds"]').should('be.visible');

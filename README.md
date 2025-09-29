@@ -19,9 +19,9 @@ A single-page application built with React, TypeScript, Nest.js + SQLite, Jest/C
 - **TanStack Query**: Server state with caching/offline.
 - **Nest.js + TypeORM**: Scalable backend with SQLite.
 - **Tailwind + MUI**: Rapid styling with customized components.
-- **Testing**: Jest/Cypress for full coverage.
+- **Testing**: Vitest for full coverage.
 
-## Setup
+## Setup 
 ### Frontend
 - Ensure you are on root folder
 - `npm i`
@@ -30,11 +30,12 @@ A single-page application built with React, TypeScript, Nest.js + SQLite, Jest/C
 ### Backend
 - `cd backend`
 - `npm i`
-- `npm run start:dev`[](http://localhost:3001)
+- `npm run start`[](http://localhost:3001)
+
 
 ## Running Tests
-- `npm test` (Jest)
-- `npm run cypress` (E2E)
+- `npm test` (Vitest)
+- `npx vitest --ui` (Vitest ui)
 
 ## Deployment
 - **Frontend**: Vercel (env vars for API URL), `vercel --prod`.

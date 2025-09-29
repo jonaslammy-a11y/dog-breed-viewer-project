@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 export const useFavorites = jest.fn().mockReturnValue({
   data: [],
   isLoading: false

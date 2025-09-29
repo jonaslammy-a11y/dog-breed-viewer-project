@@ -12,5 +12,8 @@ export default {
       tsconfig: 'tsconfig.spec.json',
     }],
   },
+module.exports = {
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+};
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
 };

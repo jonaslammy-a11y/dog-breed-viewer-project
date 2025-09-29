@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
-    "types": ["jest", "node", "vite/client", "@testing-library/jest-dom"],
+    "types": ["vitest/globals", "node", "vite/client", "@testing-library/jest-dom"],
     "esModuleInterop": true,
     "moduleResolution": "node",
     "jsx": "react-jsx"
