@@ -1,22 +1,34 @@
-// features/breeds/components/ImageDisplay.tsx
 import { Grid, Skeleton, Modal, Box, IconButton, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import CloseIcon from '@mui/icons-material/Close';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useState } from 'react';
-import { useAddFavorite, useRemoveFavorite, useFavorites, getIsFavorite } from "../../../hooks/useFavorites";
-import { useAuthStore } from '../../../store/authStore'; // Import the auth store
+import { useFavoritesGraphQL } from '../../../hooks/useFavoritesGraphQL';
+import { useAuthStore } from '../../../store/authStore';
 
 type ImageDisplayProps = { images: string[]; isLoading: boolean; error?: Error };
+
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 1, // Reduced padding for a tighter fit around the image
+  borderRadius: 2,
+  outline: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
 
 const ImageDisplay = ({ images, isLoading, error }: ImageDisplayProps) => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedImg, setSelectedImg] = useState('');
-  const { data: favorites = [] } = useFavorites();
-  const { mutate: addFavorite } = useAddFavorite();
-  const { mutate: removeFavorite } = useRemoveFavorite();
-  const { user } = useAuthStore(); // Get user from auth store
+  const { data: favorites = [], addFavorite, removeFavorite } = useFavoritesGraphQL();
+  const { user } = useAuthStore();
 
   const handleOpen = (img: string) => {
     setSelectedImg(img);
@@ -24,9 +36,8 @@ const ImageDisplay = ({ images, isLoading, error }: ImageDisplayProps) => {
   };
 
   const handleFavoriteToggle = (imageUrl: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent opening the modal when clicking favorite
-    
-    const isCurrentlyFavorite = getIsFavorite(favorites, imageUrl);
+    e.stopPropagation();
+    const isCurrentlyFavorite = favorites.includes(imageUrl);
     if (isCurrentlyFavorite) {
       removeFavorite(imageUrl);
     } else {
@@ -37,9 +48,10 @@ const ImageDisplay = ({ images, isLoading, error }: ImageDisplayProps) => {
   if (isLoading) {
     return (
       <Grid container spacing={2}>
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Grid key={i} size={{ xs: 12, sm: 4 }}>
-            <Skeleton variant="rectangular" height={200} />
+        {Array.from({ length: 9 }).map((_, i) => (
+          <Grid size={{ xs: 6, sm: 4 }} key={i}>
+            {/* Make skeleton match the new aspect ratio */}
+            <Skeleton variant="rectangular" sx={{ aspectRatio: '1 / 1', borderRadius: 2 }} />
           </Grid>
         ))}
       </Grid>
@@ -53,48 +65,88 @@ const ImageDisplay = ({ images, isLoading, error }: ImageDisplayProps) => {
   return (
     <>
       <Grid container spacing={2}>
-        {images.map((url, i) => {
-          const isFavorited = getIsFavorite(favorites, url);
-          const isLoggedIn = !!user; // Check if user is logged in
-          
+        {images.map((url) => {
+          const isFavorited = favorites.includes(url);
+          const isLoggedIn = !!user;
+
           return (
-            <Grid key={url} size={{ xs: 12, sm: 4 }} sx={{ position: 'relative' }}>
-              <motion.img
-                src={url}
-                alt={`Dog image ${i + 1}`}
-                loading="lazy"
-                className="w-full h-auto cursor-pointer"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+            <Grid size={{ xs: 6, sm: 4 }} key={url}>
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: 'spring', stiffness: 300 }}
                 onClick={() => handleOpen(url)}
-              />
-              {/* Favorite Button with Toggle - Only show when logged in */}
-              {isLoggedIn && (
-                <IconButton
-                  onClick={(e) => handleFavoriteToggle(url, e)}
-                  className="absolute bottom-2 right-2 bg-white rounded-full shadow-md"
-                  aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+                style={{
+                  position: 'relative',
+                  cursor: 'pointer',
+                  overflow: 'hidden',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                }}
+              >
+                <Box
                   sx={{
-                    color: isFavorited ? 'red' : 'inherit',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    }
+                    position: 'relative',
+                    width: '100%',
+                    // Enforce a square aspect ratio for a uniform grid
+                    aspectRatio: '1 / 1',
                   }}
                 >
-                  {isFavorited ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                </IconButton>
-              )}
+                  <img
+                    src={url}
+                    alt="A cute dog"
+                    loading="lazy"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                  />
+                  {isLoggedIn && (
+                    <IconButton
+                      onClick={(e) => handleFavoriteToggle(url, e)}
+                      aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                      sx={{
+                        position: 'absolute',
+                        bottom: 8,
+                        right: 8,
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        color: isFavorited ? 'red' : 'inherit',
+                        '&:hover': {
+                          backgroundColor: 'white',
+                          transform: 'scale(1.1)',
+                        },
+                        transition: 'transform 0.2s ease-in-out',
+                      }}
+                    >
+                      {isFavorited ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                    </IconButton>
+                  )}
+                </Box>
+              </motion.div>
             </Grid>
           );
         })}
       </Grid>
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
-        <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4">
-          <IconButton className="absolute top-2 right-2" onClick={() => setOpenModal(false)}>
+        <Box sx={modalStyle}>
+          <IconButton
+            onClick={() => setOpenModal(false)}
+            sx={{
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              zIndex: 1,
+              backgroundColor: 'rgba(255,255,255,0.8)',
+            }}
+          >
             <CloseIcon />
           </IconButton>
-          <img src={selectedImg} alt="Enlarged dog" className="max-h-[80vh]" />
+          <img
+            src={selectedImg}
+            alt="Enlarged dog"
+            style={{ maxHeight: '90vh', maxWidth: '90vw', borderRadius: '4px' }}
+          />
         </Box>
       </Modal>
     </>

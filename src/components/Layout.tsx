@@ -1,10 +1,9 @@
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material'; // Added Box import
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import LoginModal from '../features/auth/LoginModal';
 import { useState } from 'react';
 
-// Add the toTitleCase function here
 function toTitleCase(str: string) {
   return str.replace(
     /\w\S*/g,
@@ -16,88 +15,68 @@ const Layout = () => {
   const { user, logout } = useAuthStore();
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // Get current location
+  const location = useLocation();
 
-  const handleLoginClick = () => {
-    setLoginModalOpen(true);
-  };
+  const handleLoginClick = () => setLoginModalOpen(true);
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  // Check if we're on the home page
-  const isHomePage = location.pathname === '/' || location.pathname === '';
-  // Check if we're on the favorites page
+  const isHomePage = location.pathname === '/';
   const isFavoritesPage = location.pathname === '/favorites';
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <AppBar position="static">
+    <Box sx={{ bgcolor: 'grey.100', minHeight: '100vh' }}>
+      {/* Add a subtle elevation for a modern feel */}
+      <AppBar position="static" elevation={1} sx={{ bgcolor: 'white', color: 'text.primary' }}>
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
-              Dog Breed Viewer
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
+            <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
+              Dog Viewer
             </Link>
           </Typography>
-          
-          {/* Navigation Links */}
-          {/* Breed Viewer Link - Only show when NOT on home page */}
+
           {!isHomePage && (
-            <Button 
-              color="inherit" 
-              component={Link} 
-              to="/" 
-              sx={{ mx: 1 }}
-              data-testid="breed-viewer-link"
-            >
+            <Button color="inherit" component={Link} to="/" sx={{ mx: 1 }} data-testid="breed-viewer-link">
               Breed Viewer
             </Button>
           )}
           
-          {/* Favorites Link - Only show when logged in AND NOT on favorites page */}
           {user && !isFavoritesPage && (
-            <Button 
-              color="inherit" 
-              component={Link} 
-              to="/favorites" 
-              sx={{ mx: 1 }}
-              data-testid="favorites-link"
-            >
+            <Button color="inherit" component={Link} to="/favorites" sx={{ mx: 1 }} data-testid="favorites-link">
               My Favourites
             </Button>
           )}
           
-          {/* Auth Section */}
           {user ? (
             <>
               <Typography sx={{ mx: 2 }} data-testid="welcome-message">
-                {/* Apply toTitleCase to the username here */}
                 Welcome, {toTitleCase(user.username)}
               </Typography>
-              <Button color="inherit" onClick={handleLogout} data-testid="logout-button">
+              <Button variant="outlined" color="primary" onClick={handleLogout} data-testid="logout-button">
                 Logout
               </Button>
             </>
           ) : (
-            <Button color="inherit" onClick={handleLoginClick} data-testid="login-button">
+            <Button variant="contained" color="primary" onClick={handleLoginClick} data-testid="login-button">
               Login
             </Button>
           )}
         </Toolbar>
       </AppBar>
       
-      <main className="container mx-auto p-4">
+      {/* Use MUI Container for consistent spacing */}
+      <Container component="main" sx={{ py: 4 }}>
         <Outlet />
-      </main>
+      </Container>
       
-      {/* Login Modal */}
       <LoginModal 
         open={loginModalOpen} 
         onClose={() => setLoginModalOpen(false)}
       />
-    </div>
+    </Box>
   );
 };
 

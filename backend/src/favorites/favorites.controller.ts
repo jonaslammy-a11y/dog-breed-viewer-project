@@ -13,7 +13,8 @@ export class FavoritesController {
 
   @Post()
   async add(@Body() dto: CreateFavoriteDto): Promise<string> {
-    return this.service.add(dto);
+    const favorite = await this.service.add(dto);
+    return favorite.imageUrl; // Extract the imageUrl from the Favorite object
   }
 
   @Delete(':imageUrl')
