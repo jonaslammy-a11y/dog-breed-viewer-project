@@ -1,33 +1,44 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { JwtModule } from '@nestjs/jwt'; 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { FavoritesModule } from './favorites/favorites.module';
+import { AuthModule } from './auth/auth.module'; 
+import { APP_GUARD } from '@nestjs/core';
+import { GqlThrottlerGuard } from './auth/gql-throttler.guard';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(), // Loads .env
+    ConfigModule.forRoot({
+      isGlobal: true, 
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
+      playground: true,
+      // Updated context to include both req and res
+      context: ({ req, res }) => ({ req, res }),
+    }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: process.env.DATABASE_PATH,
+      database: 'database.sqlite',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, // Auto-create tables (dev only)
+      synchronize: true,
     }),
-    // FIX: The ThrottlerModule.forRoot() now expects an array of options.
-    ThrottlerModule.forRoot([{
-      ttl: 60, // 60s window
-      limit: 100, // 100 requests
-    }]),
-    JwtModule.register({ // Add this configuration
-      secret: process.env.JWT_SECRET, // Use JWT secret from .env
-      signOptions: { expiresIn: '30m' }, // Token expiration time
-    }),
-    FavoritesModule, // Add after creating
+    AuthModule, 
+    FavoritesModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: GqlThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

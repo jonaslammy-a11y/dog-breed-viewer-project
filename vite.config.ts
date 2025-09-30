@@ -9,10 +9,14 @@ export default defineConfig(() => {
   return {
     plugins: [
       react(),
-      commonjs(), // Adds better CommonJS interop for libraries like react-window
+      commonjs(),
     ],
     optimizeDeps: {
-      include: ['react-window'], // Ensures react-window is pre-bundled correctly
+      include: ['react-window', '@apollo/client'],
+      esbuildOptions: {
+        // Add this to ensure proper ESM handling
+        mainFields: ['module', 'jsnext:main', 'jsnext'],
+      },
     },
     resolve: {
       alias: isTest
@@ -23,6 +27,8 @@ export default defineConfig(() => {
             },
           ]
         : [],
+      // Add this to help with module resolution
+      mainFields: ['module', 'jsnext:main', 'jsnext', 'main'],
     },
     test: {
       globals: true,
