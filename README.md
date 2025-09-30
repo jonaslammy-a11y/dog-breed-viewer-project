@@ -11,11 +11,11 @@ A sophisticated full-stack application featuring a hybrid architecture with REST
 - Responsive design with Material-UI and Tailwind CSS
 
 **Test User Credentials:**
-- Username: `emilys`
-- Password: `emilyspass`
+- Username: `kminchelle`
+- Password: `0lelplR`
 - *Note: You can use any username & password combination from [dummyjson.com/users](https://dummyjson.com/users)*
 
-## ?? Tech Stack Highlights
+## 🚀 Tech Stack Highlights
 
 ### Frontend
 - **React 18** + **Vite** + **TypeScript** - Modern development with type safety
@@ -39,7 +39,7 @@ A sophisticated full-stack application featuring a hybrid architecture with REST
 - **Testing Library** - Component testing utilities
 - **ESLint** + **TypeScript** - Code quality and type checking
 
-## ??? Architectural Decisions
+## 🏗️ Architectural Decisions
 
 ### Hybrid API Strategy
 - **REST API** (dog.ceo) - For breed listing and image fetching
@@ -56,7 +56,7 @@ A sophisticated full-stack application featuring a hybrid architecture with REST
 - **Apollo Client**: GraphQL state (favorites) with reactive updates
 - **Zustand**: Client state (UI, auth) with persistence
 
-## ?? Setup Instructions
+## 📦 Setup Instructions
 
 ### Prerequisites
 - Node.js 18+ installed on your system
@@ -104,7 +104,7 @@ For development, you'll need both servers running:
 - Run the frontend in another terminal
 - Access the application at [http://localhost:5173](http://localhost:5173)
 
-## ?? Testing
+## 🧪 Testing
 
 ### Unit Tests
 ```bash
@@ -119,7 +119,7 @@ The Vitest UI will open in your browser for interactive testing.
 
 **To stop the Vitest UI:** Press `Ctrl + C` in the terminal where Vitest is running, or type `q` and press Enter in the terminal.
 
-## ?? Deployment
+## 🚢 Deployment
 
 ### Frontend
 - **Platform**: Vercel
@@ -131,7 +131,7 @@ The Vitest UI will open in your browser for interactive testing.
 - **Configuration**: SQLite persists, enable HTTPS
 - **Setup**: Follow Render deployment documentation
 
-## ?? API Endpoints
+## 📊 API Endpoints
 
 ### REST Endpoints (dog.ceo)
 - `GET /breeds/list/all` - Fetch all dog breeds
@@ -142,23 +142,23 @@ The Vitest UI will open in your browser for interactive testing.
 - `Mutation addFavorite` - Add image to favorites
 - `Mutation removeFavorite` - Remove image from favorites
 
-## ?? Authentication Flow
+## 🔐 Authentication Flow
 1. User logs in with dummyjson credentials
 2. Frontend stores JWT token in Zustand persistence
 3. Apollo Client automatically attaches token to GraphQL requests
 4. Backend validates token with dummyjson API on each protected operation
 5. Protected routes and features require valid authentication
 
-## ?? Performance Features
+## 🎯 Performance Features
 - Image lazy loading with optimized grid layout
 - Debounced search with Lodash
 - Query caching with TanStack Query (24h for breeds, 5min for images)
 - Optimistic updates for favorites
 - Virtualized breed list for large datasets
 
-## ?? Performance Metrics
+## 📈 Performance Metrics
 - Lighthouse: [] 
 - Bundle Size: [] (From build analysis)
 
-## ?? Submission
+## 📝 Submission
 - GitHub repo link or zip file.
