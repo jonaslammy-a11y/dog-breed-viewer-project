@@ -14,7 +14,7 @@ const FavoritesPage = () => {
         <Typography>No favorites yet. Add some dog images to your favorites!</Typography>
       ) : (
         <Grid container spacing={2}>
-          {favorites.map((url) => (
+          {favorites.map((url : string) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={url}>
               <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                 <Box sx={{ position: 'relative', width: '100%', aspectRatio: '1 / 1' }}>

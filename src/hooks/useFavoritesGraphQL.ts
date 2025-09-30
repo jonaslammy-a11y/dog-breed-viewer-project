@@ -23,8 +23,14 @@ const REMOVE_FAVORITE = gql`
   }
 `;
 
+// 1. Define the interface for the query result
+interface GetFavoritesQueryResult {
+  favoritesUrls: string[];
+}
+
 export const useFavoritesGraphQL = () => {
-  const { data, loading, error, refetch } = useQuery(GET_FAVORITES);
+  // 2. Apply the interface to the useQuery hook
+  const { data, loading, error, refetch } = useQuery<GetFavoritesQueryResult>(GET_FAVORITES);
   
   const [addFavoriteMutation] = useMutation(ADD_FAVORITE, {
     onCompleted: () => {
@@ -72,6 +78,7 @@ export const useFavoritesGraphQL = () => {
   };
 
   return {
+    // 3. TypeScript now knows that `data?.favoritesUrls` is valid.
     data: data?.favoritesUrls || [],
     isLoading: loading,
     error,

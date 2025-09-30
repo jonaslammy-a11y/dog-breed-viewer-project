@@ -10,7 +10,7 @@ import { useAuthStore } from '../../../store/authStore';
 type ImageDisplayProps = { images: string[]; isLoading: boolean; error?: Error };
 
 const modalStyle = {
-  position: 'absolute' as 'absolute',
+  position: 'absolute' as const,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
