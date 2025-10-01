@@ -8,18 +8,17 @@ export default defineConfig(() => {
   const isTest = process.env.VITEST === 'true';
 
   return {
+    define: {
+      'global': 'globalThis',
+    },
     plugins: [
       react(),
       commonjs(),
     ],
     optimizeDeps: {
-      include: ['react-window', '@apollo/client'],
-      esbuildOptions: {
-        // Add this to ensure proper ESM handling
-        mainFields: ['module', 'jsnext:main', 'jsnext'],
-      },
+      include: ['react-window', '@apollo/client', 'axios'],
     },
-    resolve: {
+    resolve: {     
       alias: isTest
         ? [
             {
@@ -27,9 +26,14 @@ export default defineConfig(() => {
               replacement: 'identity-obj-proxy',
             },
           ]
-        : [],
-      // Add this to help with module resolution
-      mainFields: ['module', 'jsnext:main', 'jsnext', 'main'],
+        : {
+            './runtimeConfig': './runtimeConfig.browser',
+          },
+    },
+    build: {
+      commonjsOptions: {
+        transformMixedEsModules: true,
+      },
     },
     test: {
       globals: true,

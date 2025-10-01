@@ -38,7 +38,7 @@ describe('FavoritesController (e2e)', () => {
 
   it('/favorites (POST) - should add a favorite', async () => {
     const imageUrl = 'https://images.dog.ceo/breeds/bulldog/image1.jpg';
-    
+
     await request(app.getHttpServer())
       .post('/favorites')
       .send({ imageUrl })
@@ -55,11 +55,9 @@ describe('FavoritesController (e2e)', () => {
 
   it('/favorites (POST) - should return conflict when adding duplicate', async () => {
     const imageUrl = 'https://images.dog.ceo/breeds/bulldog/image1.jpg';
-    
+
     // Add first time
-    await request(app.getHttpServer())
-      .post('/favorites')
-      .send({ imageUrl });
+    await request(app.getHttpServer()).post('/favorites').send({ imageUrl });
 
     // Try to add duplicate
     await request(app.getHttpServer())
@@ -70,11 +68,9 @@ describe('FavoritesController (e2e)', () => {
 
   it('/favorites/:imageUrl (DELETE) - should remove a favorite', async () => {
     const imageUrl = 'https://images.dog.ceo/breeds/bulldog/image2.jpg';
-    
+
     // First add a favorite
-    await request(app.getHttpServer())
-      .post('/favorites')
-      .send({ imageUrl });
+    await request(app.getHttpServer()).post('/favorites').send({ imageUrl });
 
     // Then remove it
     await request(app.getHttpServer())

@@ -1,4 +1,8 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Favorite } from './entities/favorite.entity';
@@ -21,7 +25,9 @@ export class FavoritesService {
   }
 
   async add(dto: CreateFavoriteDto): Promise<Favorite> {
-    const existing = await this.repository.findOneBy({ imageUrl: dto.imageUrl });
+    const existing = await this.repository.findOneBy({
+      imageUrl: dto.imageUrl,
+    });
     if (existing) {
       throw new ConflictException('Image already favorited');
     }

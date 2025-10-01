@@ -18,10 +18,12 @@ const httpLink = createHttpLink({
   uri: 'http://localhost:3001/graphql',
 });
 
-// Create an auth link that sets the context for every request
+// Create an auth link that dynamically reads the token on every request
 const authLink = setContext((_, { headers }) => {
-  // Get the token directly from the store
+  // IMPORTANT: Read the token fresh from the store on every request
   const token = useAuthStore.getState().token;
+  
+  console.log('Apollo Client - Current token:', token ? 'Present' : 'Missing'); // Debug log
   
   // Return the headers to the context
   return {
@@ -33,7 +35,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const apolloClient = new ApolloClient({
-  link: authLink.concat(httpLink), // Chain the auth link and http link
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
   defaultOptions: {
     watchQuery: {

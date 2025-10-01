@@ -1,8 +1,8 @@
-import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material'; // Added Box import
+import { AppBar, Toolbar, Typography, Button, Container, Box } from '@mui/material';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import LoginModal from '../features/auth/LoginModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect import
 
 function toTitleCase(str: string) {
   return str.replace(
@@ -12,10 +12,19 @@ function toTitleCase(str: string) {
 }
 
 const Layout = () => {
-  const { user, logout } = useAuthStore();
+  const { user, token, logout } = useAuthStore(); // Added token from useAuthStore
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Add route change monitoring for debugging
+  useEffect(() => {
+    console.log('Route changed - Current auth state:', {
+      route: location.pathname,
+      user: user ? user.username : 'No user',
+      token: token ? 'Present' : 'Missing'
+    });
+  }, [location.pathname, user, token]);
 
   const handleLoginClick = () => setLoginModalOpen(true);
 

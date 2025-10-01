@@ -13,7 +13,7 @@ export class AuthService {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
+        }),
       );
       return response.data;
     } catch (error) {
