@@ -11,8 +11,8 @@ A sophisticated full-stack application featuring a hybrid architecture with REST
 - Responsive design with Material-UI and Tailwind CSS
 
 **Test User Credentials:**
-- Username: `kminchelle`
-- Password: `0lelplR`
+- Username: `emilys`
+- Password: `emilyspass`
 - *Note: You can use any username & password combination from [dummyjson.com/users](https://dummyjson.com/users)*
 
 ## 🚀 Tech Stack Highlights
